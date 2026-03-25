@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026 Q2 - 3D Secure Strategy - Yuno Payments</title>
+<style>
+  :root {
+    --primary: #1a1a2e;
+    --accent: #4361ee;
+    --accent-light: #e8edff;
+    --danger: #e63946;
+    --warning: #f4a261;
+    --success: #2a9d8f;
+    --bg: #fafbfc;
+    --card-bg: #ffffff;
+    --text: #24292f;
+    --text-secondary: #57606a;
+    --border: #d0d7de;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    padding: 0;
+  }
+  .header {
+    background: linear-gradient(135deg, var(--primary) 0%, #16213e 100%);
+    color: white;
+    padding: 48px 0 40px;
+    text-align: center;
+  }
+  .header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    max-width: 800px;
+    margin: 0 auto 12px;
+    padding: 0 24px;
+  }
+  .header .subtitle {
+    font-size: 15px;
+    opacity: 0.8;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+  .header .meta {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    font-size: 13px;
+    opacity: 0.7;
+  }
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 32px 24px;
+  }
+  .one-liner {
+    background: var(--accent-light);
+    border-left: 4px solid var(--accent);
+    padding: 20px 24px;
+    border-radius: 0 8px 8px 0;
+    margin-bottom: 32px;
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--primary);
+  }
+  h2 {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--primary);
+    margin: 40px 0 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--accent);
+  }
+  h3 {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--text);
+    margin: 24px 0 12px;
+  }
+  h4 {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin: 16px 0 8px;
+  }
+  p, li { font-size: 15px; margin-bottom: 8px; }
+  ul, ol { padding-left: 24px; margin-bottom: 16px; }
+  strong { font-weight: 600; }
+  code {
+    background: #f0f2f5;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+  }
+  pre {
+    background: #1e1e2e;
+    color: #cdd6f4;
+    padding: 20px;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-size: 13px;
+    line-height: 1.5;
+    margin: 16px 0;
+  }
+  pre code {
+    background: none;
+    padding: 0;
+    color: inherit;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0 24px;
+    font-size: 14px;
+  }
+  th {
+    background: var(--primary);
+    color: white;
+    font-weight: 600;
+    text-align: left;
+    padding: 10px 12px;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  tr:nth-child(even) td { background: #f8f9fa; }
+  tr:hover td { background: var(--accent-light); }
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 24px;
+    margin: 16px 0;
+  }
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin: 16px 0 24px;
+  }
+  .kpi-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    border-top: 3px solid var(--accent);
+  }
+  .kpi-card.danger { border-top-color: var(--danger); }
+  .kpi-card.warning { border-top-color: var(--warning); }
+  .kpi-card.success { border-top-color: var(--success); }
+  .kpi-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--primary);
+    margin: 4px 0;
+  }
+  .kpi-label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-secondary);
+  }
+  .kpi-sublabel {
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+  }
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .badge-p0 { background: #fde2e4; color: #c1121f; }
+  .badge-p1 { background: #fef0d5; color: #b45309; }
+  .badge-p2 { background: #e0e7ff; color: #3730a3; }
+  .badge-p3 { background: #e8e8e8; color: #555; }
+  .badge-done { background: #d3f9d8; color: #087f23; }
+  .badge-blocked { background: #fde2e4; color: #c1121f; }
+  .problem-list {
+    list-style: none;
+    padding: 0;
+    counter-reset: problem;
+  }
+  .problem-list li {
+    counter-increment: problem;
+    padding: 16px 16px 16px 56px;
+    position: relative;
+    border-left: 3px solid var(--danger);
+    margin-bottom: 12px;
+    background: #fff5f5;
+    border-radius: 0 8px 8px 0;
+  }
+  .problem-list li::before {
+    content: counter(problem);
+    position: absolute;
+    left: 16px;
+    top: 16px;
+    width: 24px;
+    height: 24px;
+    background: var(--danger);
+    color: white;
+    border-radius: 50%;
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .phase-timeline {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin: 24px 0;
+  }
+  .phase-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    position: relative;
+    border-top: 3px solid var(--accent);
+  }
+  .phase-card h4 {
+    font-size: 14px;
+    margin: 0 0 4px;
+    color: var(--primary);
+  }
+  .phase-card .phase-time {
+    font-size: 12px;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .phase-card ul {
+    font-size: 13px;
+    padding-left: 16px;
+    margin: 0;
+  }
+  .phase-card ul li { margin-bottom: 4px; }
+  .flow-diagram {
+    background: #1e1e2e;
+    color: #cdd6f4;
+    padding: 24px;
+    border-radius: 8px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    overflow-x: auto;
+    white-space: pre;
+    margin: 16px 0;
+  }
+  .callout {
+    padding: 16px 20px;
+    border-radius: 8px;
+    margin: 16px 0;
+    font-size: 14px;
+  }
+  .callout-info { background: #e8edff; border-left: 4px solid var(--accent); }
+  .callout-warning { background: #fef3cd; border-left: 4px solid var(--warning); }
+  .callout-danger { background: #fde2e4; border-left: 4px solid var(--danger); }
+  .callout-success { background: #d3f9d8; border-left: 4px solid var(--success); }
+  .section-divider { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+  .toc {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 24px;
+    margin: 24px 0;
+  }
+  .toc ul { list-style: none; padding: 0; columns: 2; }
+  .toc li { padding: 4px 0; }
+  .toc a { color: var(--accent); text-decoration: none; font-size: 14px; }
+  .toc a:hover { text-decoration: underline; }
+  .footer {
+    text-align: center;
+    padding: 32px;
+    color: var(--text-secondary);
+    font-size: 13px;
+    border-top: 1px solid var(--border);
+    margin-top: 48px;
+  }
+  @media (max-width: 768px) {
+    .phase-timeline { grid-template-columns: 1fr; }
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    .toc ul { columns: 1; }
+    .header .meta { flex-direction: column; gap: 4px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>3D Secure Strategy</h1>
+  <div class="subtitle">Fix Critical Bugs, Automatic Exemptions & Intelligent Routing</div>
+  <div class="meta">
+    <span>2026 Q2 &middot; Payments Team</span>
+    <span>Status: Draft &mdash; Internal Review</span>
+    <span>March 2026</span>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="one-liner">
+    Fix critical bugs that break 3DS exemptions and skip logic for ~30-40% of EU merchants, implement proper CIT-only 3DS with MIT/BIN-level skip rules, then build an automatic exemption engine and intelligent 3DS routing &mdash; turning Yuno's multi-provider 3DS architecture into a measurable conversion advantage.
+  </div>
+
+  <nav class="toc">
+    <h3 style="margin-top:0">Contents</h3>
+    <ul>
+      <li><a href="#problem">Problem</a></li>
+      <li><a href="#evidence">Evidences &amp; Metrics</a></li>
+      <li><a href="#skip-logic">3DS Skip Logic (3 Rules)</a></li>
+      <li><a href="#solution">Solution &amp; Phases</a></li>
+      <li><a href="#goals">Goals &amp; Success Metrics</a></li>
+      <li><a href="#benchmarking">Competitor Benchmarking</a></li>
+      <li><a href="#business-case">Business Case</a></li>
+      <li><a href="#sizing">Technical Sizing</a></li>
+      <li><a href="#risks">Risks &amp; Open Questions</a></li>
+      <li><a href="#faq">FAQ</a></li>
+    </ul>
+  </nav>
+
+  <!-- PROBLEM -->
+  <h2 id="problem">Problem</h2>
+
+  <ol class="problem-list">
+    <li><strong>Bug OR-694 (P0):</strong> In <code>routing-orc</code>, 3DS exemptions (Low-value, Recurring, Trusted Beneficiary, Secure Corporate, MOTO) are <strong>silently ignored</strong> unless a fraud provider (Forter/Riskified) is in the route. ~30-40% of EU merchants are affected &mdash; they face 100% challenge rates on transactions that should be exempt. Industry data: 10-15% cart abandonment per unnecessary challenge.</li>
+    <li><strong>Bug in gateway-integration-api (P0):</strong> The <code>ThreeDSecure</code> struct on the payment path lacks <code>StrongCustomerAuthenticationExemptions</code>. Even if OR-694 is fixed, exemptions are <strong>silently dropped</strong> before reaching acquirers.</li>
+    <li><strong>Incomplete 3DS skip logic (P0):</strong> Only CIT (Cardholder-Initiated Transactions) should go through 3DS. Today, MIT transactions (subscriptions with usage=USED) and BINs from non-mandate regions unnecessarily go through 3DS. No AUTHORIZATION_REQUIRED auto-retry exists.</li>
+    <li><strong>No automatic exemption engine:</strong> Every competitor (Adyen, Stripe, Checkout.com, Braintree) auto-applies rule-based exemptions. Yuno does nothing without a fraud provider.</li>
+    <li><strong>No 3DS analytics dashboard:</strong> Merchants have zero visibility into frictionless vs. challenge rates.</li>
+    <li><strong>No automatic 3DS routing:</strong> Yuno has 2 standalone 3DS providers (Netcetera and Checkout.com) but no intelligent routing to select the best-performing MPI.</li>
+  </ol>
+
+  <div class="callout callout-info">
+    <strong>Strategic opportunity:</strong> No competitor offers multi-provider standalone 3DS routing. Adyen, Stripe, and Checkout.com are locked to their own single 3DS engine. By building automatic routing that selects the MPI with the best frictionless/approval rate per country/BIN/issuer &mdash; without the merchant changing anything &mdash; Yuno can offer a differentiation no single-PSP competitor can replicate.
+  </div>
+
+  <div class="callout callout-warning">
+    <strong>Checkout.com blocker:</strong> Checkout.com 3DS requires a <code>processor_channel_id</code> per merchant, which today is a manual onboarding process. Checkout.com is building an API to automate this but <strong>there is no ETA</strong>. This makes Netcetera the de facto sole MPI today.
+  </div>
+
+  <hr class="section-divider">
+
+  <!-- EVIDENCE -->
+  <h2 id="evidence">Evidences & Metrics</h2>
+  <p><em>Source: Datadog, Feb 22 &ndash; Mar 26, 2026</em></p>
+
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-label">3DS Auths (Netcetera)</div>
+      <div class="kpi-value">5.8M</div>
+      <div class="kpi-sublabel">per month (~194K/day)</div>
+    </div>
+    <div class="kpi-card danger">
+      <div class="kpi-label">3DS Auths (Checkout.com)</div>
+      <div class="kpi-value">~416</div>
+      <div class="kpi-sublabel">per month (processor_channel_id blocker)</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Gateway Traffic</div>
+      <div class="kpi-value">60.3M</div>
+      <div class="kpi-sublabel">per month (~2M/day)</div>
+    </div>
+    <div class="kpi-card warning">
+      <div class="kpi-label">3DS % of Gateway</div>
+      <div class="kpi-value">9.7%</div>
+      <div class="kpi-sublabel">standalone 3DS traffic</div>
+    </div>
+    <div class="kpi-card success">
+      <div class="kpi-label">Netcetera Error Rate</div>
+      <div class="kpi-value">0.006%</div>
+      <div class="kpi-sublabel">excluding one-time spike</div>
+    </div>
+    <div class="kpi-card danger">
+      <div class="kpi-label">Netcetera Concentration</div>
+      <div class="kpi-value">99.99%</div>
+      <div class="kpi-sublabel">of all standalone 3DS &mdash; single-provider risk</div>
+    </div>
+  </div>
+
+  <div class="callout callout-danger">
+    <strong>Key insight:</strong> Netcetera handles 99.99% of standalone 3DS. A significant but unknown portion of the 5.8M monthly authentications are likely MIT transactions or non-mandate BINs that should skip 3DS entirely. Implementing the 3 skip rules will reduce unnecessary volume, lower friction, and reduce failed authentications.
+  </div>
+
+  <h3>Provider Status</h3>
+  <table>
+    <thead>
+      <tr><th>Provider</th><th>Role</th><th>Volume/month</th><th>Status</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>Netcetera</strong></td><td>Standalone MPI</td><td>~5.8M</td><td><span class="badge badge-done">Primary</span></td></tr>
+      <tr><td><strong>Checkout.com</strong></td><td>Standalone MPI</td><td>~416</td><td><span class="badge badge-blocked">Blocked</span> processor_channel_id</td></tr>
+      <tr><td>CyberSource</td><td>Native 3DS (not standalone)</td><td>N/A</td><td>Not part of Yuno 3DS product</td></tr>
+      <tr><td>Xendit</td><td>Native 3DS (not standalone)</td><td>N/A</td><td>Indonesia/SEA focus</td></tr>
+      <tr><td>PicPay / NTT Data</td><td>Native 3DS (not standalone)</td><td>N/A</td><td>Brazil focus</td></tr>
+      <tr><td>Unlimint</td><td>Native 3DS (not standalone)</td><td>N/A</td><td>&mdash;</td></tr>
+    </tbody>
+  </table>
+
+  <hr class="section-divider">
+
+  <!-- SKIP LOGIC -->
+  <h2 id="skip-logic">3DS Skip Logic: Only CIT Goes to 3DS</h2>
+
+  <p>Three independent rules evaluate whether to skip 3DS. If <strong>any</strong> rule matches, 3DS is skipped:</p>
+
+  <table>
+    <thead>
+      <tr><th>Rule</th><th>Condition</th><th>Action</th><th>Rationale</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>1</strong></td><td>Fraud provider returns <code>OUT_OF_SCOPE</code></td><td>Skip 3DS</td><td>Fraud intelligence says out of scope</td></tr>
+      <tr><td><strong>2</strong></td><td>Card BIN from non-mandate country (US, LATAM, etc.)</td><td>Skip 3DS</td><td>No regulatory requirement</td></tr>
+      <tr><td><strong>3</strong></td><td>MIT: <code>storedCredentialTransaction.usage == USED</code></td><td>Skip 3DS</td><td>Cardholder not present to authenticate</td></tr>
+    </tbody>
+  </table>
+
+  <p>Only <strong>CIT</strong> (<code>usage == FIRST</code>) goes through 3DS authentication.</p>
+
+  <h3>Override: AUTHORIZATION_REQUIRED Auto-Retry</h3>
+
+  <p>If a provider declines with <code>AUTHORIZATION_REQUIRED</code> (Visa 65, MC 1A), the issuer is explicitly demanding SCA:</p>
+
+  <div class="card">
+    <ul>
+      <li><strong>All skip rules are overridden</strong> &mdash; the transaction MUST go through 3DS</li>
+      <li><strong>If merchant has <code>auto_retry_authorization_required</code> enabled</strong> (default in Managed mode): Yuno automatically retries with 3DS &mdash; transparent to the merchant</li>
+      <li><strong>If merchant has disabled auto-retry</strong> (Custom mode option): decline returned to merchant, who handles retry themselves</li>
+      <li>Max 1 automatic retry to prevent loops</li>
+    </ul>
+  </div>
+
+  <h4>Decision Flow</h4>
+  <div class="flow-diagram">Payment request arrives
+  |
+  +-- Was this a retry after AUTHORIZATION_REQUIRED?
+  |     |
+  |     YES -> Go to 3DS unconditionally (override)
+  |     |
+  |     NO --> Evaluate skip rules:
+  |              |
+  |              +-- Rule 1: Fraud OUT_OF_SCOPE?    -> Skip 3DS
+  |              +-- Rule 2: BIN non-mandate?       -> Skip 3DS
+  |              +-- Rule 3: MIT (usage=USED)?      -> Skip 3DS
+  |              |
+  |              +-- No rules matched -> CIT -> Go to 3DS
+  |                    |
+  |                    +-- Select MPI (auto-routing)
+  |                    +-- Apply exemptions
+  |                    +-- Authenticate
+  |
+  +-- Payment submitted to provider
+        |
+        +-- Approved -> Done
+        +-- Declined: AUTHORIZATION_REQUIRED
+        |     |
+        |     +-- auto_retry enabled?
+        |     |     YES -> Force 3DS, retry payment
+        |     |     NO  -> Return decline to merchant
+        |     |
+        +-- Declined: other -> Normal decline handling</div>
+
+  <hr class="section-divider">
+
+  <!-- SOLUTION -->
+  <h2 id="solution">Solution & Phases</h2>
+
+  <div class="phase-timeline">
+    <div class="phase-card">
+      <h4>Phase 1 <span class="badge badge-p0">P0</span></h4>
+      <div class="phase-time">Q2 2026 &middot; 2 sprints</div>
+      <ul>
+        <li>Fix OR-694 (1 function change)</li>
+        <li>Fix gateway struct (1 field)</li>
+        <li>3DS skip logic (3 rules + AUTHORIZATION_REQUIRED override)</li>
+      </ul>
+    </div>
+    <div class="phase-card">
+      <h4>Phase 2 <span class="badge badge-p1">P1</span></h4>
+      <div class="phase-time">Q2-Q3 2026 &middot; 2-3 sprints</div>
+      <ul>
+        <li>Auto low-value exemptions</li>
+        <li>Auto recurring/MIT detection</li>
+        <li>3DS analytics foundation</li>
+      </ul>
+    </div>
+    <div class="phase-card">
+      <h4>Phase 3 <span class="badge badge-p2">P2</span></h4>
+      <div class="phase-time">Q3-Q4 2026 &middot; 3-4 sprints</div>
+      <ul>
+        <li>Yuno 3DS Dashboard</li>
+        <li>Automatic MPI routing</li>
+        <li>Soft-decline auto-retry</li>
+        <li>Provider failover</li>
+      </ul>
+    </div>
+    <div class="phase-card">
+      <h4>Phase 4 <span class="badge badge-p3">P3</span></h4>
+      <div class="phase-time">Q1 2027 &middot; 2-3 sprints</div>
+      <ul>
+        <li>Delegated auth</li>
+        <li>Decoupled auth</li>
+        <li>Feedback loop</li>
+        <li>New MPI providers</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>Managed vs Custom Mode</h3>
+  <table>
+    <thead>
+      <tr><th>Decision</th><th>Managed Mode (default)</th><th>Custom Mode</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Skip 3DS for MIT?</td><td>Yes (automatic)</td><td>Configurable toggle</td></tr>
+      <tr><td>Skip non-mandate BINs?</td><td>Yes (automatic)</td><td>Configurable toggle</td></tr>
+      <tr><td>Auto-retry AUTHORIZATION_REQUIRED?</td><td><strong>Yes (enabled by default)</strong></td><td><strong>Configurable</strong> &mdash; can disable if merchant handles retries</td></tr>
+      <tr><td>Exemptions?</td><td>Auto-applied (low-value, recurring)</td><td>Per-type toggles + country overrides</td></tr>
+      <tr><td>3DS provider?</td><td>Auto-routed (best performer)</td><td>Pin to specific MPI or auto-route</td></tr>
+      <tr><td>Challenge preference?</td><td>No preference (issuer decides)</td><td>Configurable per country</td></tr>
+    </tbody>
+  </table>
+
+  <hr class="section-divider">
+
+  <!-- GOALS -->
+  <h2 id="goals">Goals & Success Metrics</h2>
+
+  <table>
+    <thead>
+      <tr><th>KPI</th><th>Current</th><th>Phase 1 Target</th><th>Phase 3 Target</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>EU exemption availability (no fraud provider)</td><td><strong style="color:var(--danger)">0%</strong></td><td>100%</td><td>100% + auto-applied</td></tr>
+      <tr><td>Exemption propagation to acquirers</td><td><strong style="color:var(--danger)">0%</strong> (silently dropped)</td><td>100%</td><td>100%</td></tr>
+      <tr><td>MIT transactions skipping 3DS</td><td>Partial</td><td>100% of MIT</td><td>100%</td></tr>
+      <tr><td>Non-mandate BINs skipping 3DS</td><td><strong style="color:var(--danger)">0%</strong></td><td>100%</td><td>100%</td></tr>
+      <tr><td>AUTHORIZATION_REQUIRED recovery</td><td><strong style="color:var(--danger)">0%</strong></td><td>N/A</td><td>&gt;60% retry success</td></tr>
+      <tr><td>3DS challenge rate (EU)</td><td>~100% for affected merchants</td><td>Reduced</td><td>&lt;30%</td></tr>
+      <tr><td>3DS frictionless rate</td><td>Unknown</td><td>Measurable</td><td>&gt;70%</td></tr>
+      <tr><td>Auto-routing coverage</td><td><strong style="color:var(--danger)">0%</strong></td><td>N/A</td><td>100% standalone 3DS</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Regional Impact</h3>
+  <table>
+    <thead>
+      <tr><th>Region</th><th>Impact</th><th>Compliance Risk</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>EU/EEA</strong></td><td>PSD2 SCA &mdash; exemptions broken for 30-40% of merchants</td><td><span class="badge badge-p0">HIGH</span></td></tr>
+      <tr><td><strong>UK</strong></td><td>FCA SCA mirror &mdash; same bug, &pound;25 threshold</td><td><span class="badge badge-p0">HIGH</span></td></tr>
+      <tr><td><strong>India</strong></td><td>RBI AFA mandate &mdash; no domestic support</td><td><span class="badge badge-p0">HIGH</span></td></tr>
+      <tr><td><strong>Japan</strong></td><td>METI mandate &mdash; no JCB J/Secure</td><td><span class="badge badge-p1">MEDIUM</span></td></tr>
+      <tr><td>Brazil</td><td>ABECS debit &mdash; covered via Netcetera</td><td><span class="badge badge-p3">LOW</span></td></tr>
+      <tr><td>LATAM / US / Canada</td><td>No mandates &mdash; existing flows work</td><td><span class="badge badge-p3">LOW</span></td></tr>
+    </tbody>
+  </table>
+
+  <hr class="section-divider">
+
+  <!-- BENCHMARKING -->
+  <h2 id="benchmarking">Competitor Benchmarking</h2>
+
+  <table>
+    <thead>
+      <tr><th>Capability</th><th>Yuno (today)</th><th>Yuno (Phase 3)</th><th>Adyen</th><th>Stripe</th><th>Checkout.com</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Automatic exemption engine</td><td style="color:var(--danger)">NO</td><td style="color:var(--success)"><strong>YES</strong></td><td>YES</td><td>YES</td><td>YES</td></tr>
+      <tr><td>MIT skip logic</td><td style="color:var(--warning)">Partial</td><td style="color:var(--success)"><strong>YES</strong></td><td>YES</td><td>YES</td><td>YES</td></tr>
+      <tr><td>BIN-level mandate scope</td><td style="color:var(--danger)">NO</td><td style="color:var(--success)"><strong>YES</strong></td><td>YES</td><td>YES</td><td>YES</td></tr>
+      <tr><td>Soft-decline auto-retry</td><td style="color:var(--danger)">NO</td><td style="color:var(--success)"><strong>YES</strong></td><td>YES</td><td>YES</td><td>YES</td></tr>
+      <tr><td><strong>Multi-provider standalone 3DS</strong></td><td style="color:var(--success)"><strong>YES (2)</strong></td><td style="color:var(--success)"><strong>YES (auto)</strong></td><td style="color:var(--danger)">NO</td><td style="color:var(--danger)">NO</td><td style="color:var(--danger)">NO</td></tr>
+      <tr><td><strong>Automatic MPI routing</strong></td><td style="color:var(--danger)">NO</td><td style="color:var(--success)"><strong>YES</strong></td><td>N/A</td><td>N/A</td><td>N/A</td></tr>
+      <tr><td>3DS analytics dashboard</td><td style="color:var(--danger)">NO</td><td style="color:var(--success)"><strong>YES</strong></td><td>YES</td><td>YES</td><td>YES</td></tr>
+      <tr><td>Managed + Custom modes</td><td style="color:var(--danger)">NO</td><td style="color:var(--success)"><strong>YES</strong></td><td>Partial</td><td>Partial</td><td>Partial</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-success">
+    <strong>Leapfrog:</strong> No competitor can offer automatic 3DS routing because they each have a single 3DS engine. Yuno's architecture enables a unique value proposition: observe which MPI performs best per country/BIN/issuer and route automatically. The merchant doesn't configure anything.
+  </div>
+
+  <hr class="section-divider">
+
+  <!-- BUSINESS CASE -->
+  <h2 id="business-case">Business Case</h2>
+
+  <h3>Phase 1 &mdash; Immediate Revenue Recovery</h3>
+  <div class="card">
+    <table>
+      <tbody>
+        <tr><td>3DS authentications/month (standalone)</td><td><strong>~5.8M</strong></td></tr>
+        <tr><td>Estimated % that should skip 3DS (MIT + non-mandate)</td><td>15-25%</td></tr>
+        <tr><td>Unnecessary 3DS authentications/month</td><td><strong>870K &ndash; 1.45M</strong></td></tr>
+        <tr><td>Estimated % eligible for exemptions (of remaining CIT)</td><td>20-35%</td></tr>
+        <tr><td>Challenges avoided/month</td><td><strong>580K &ndash; 1.2M</strong></td></tr>
+        <tr><td>Cart abandonment per challenge</td><td>10-15%</td></tr>
+        <tr><td><strong>Recovered checkouts/month</strong></td><td><strong>100K &ndash; 250K</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Phase 3 &mdash; Auto-Routing Upside</h3>
+  <p>If Checkout.com achieves even a 5pp higher frictionless rate than Netcetera for certain BIN ranges/countries, routing ~10% of traffic to the better provider would reduce challenges on ~58K additional transactions/month. As more MPIs are added, this compounds.</p>
+
+  <div class="callout callout-info">
+    <strong>Qualitative impact:</strong> PSD2 compliance risk eliminated. MIT payment failures eliminated. Competitive parity on exemptions. Competitive advantage via intelligent multi-provider routing. New sales lever: "Yuno 3DS" as a merchant-facing product.
+  </div>
+
+  <hr class="section-divider">
+
+  <!-- SIZING -->
+  <h2 id="sizing">Technical Sizing</h2>
+
+  <table>
+    <thead>
+      <tr><th>Phase</th><th>Backend</th><th>Frontend</th><th>Data</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>Phase 1</strong> &mdash; Fix P0s + skip logic</td><td><strong>M</strong></td><td>N/A</td><td><strong>S</strong> (BIN mapping)</td></tr>
+      <tr><td><strong>Phase 2</strong> &mdash; Auto exemptions + analytics</td><td><strong>L</strong></td><td>N/A</td><td><strong>M</strong></td></tr>
+      <tr><td><strong>Phase 3</strong> &mdash; Dashboard + routing + retry</td><td><strong>XL</strong></td><td><strong>L</strong></td><td><strong>L</strong></td></tr>
+      <tr><td><strong>Phase 4</strong> &mdash; Advanced auth + feedback</td><td><strong>M</strong></td><td><strong>S</strong></td><td><strong>M</strong></td></tr>
+    </tbody>
+  </table>
+
+  <hr class="section-divider">
+
+  <!-- RISKS -->
+  <h2 id="risks">Risks & Open Questions</h2>
+
+  <h3>Key Risks</h3>
+  <table>
+    <thead>
+      <tr><th>Risk</th><th>Severity</th><th>Mitigation</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>OR-694 fix regresses existing fraud+3DS routes</td><td><span class="badge badge-p0">HIGH</span></td><td>Test coverage, feature flag, canary rollout</td></tr>
+      <tr><td>MIT skip incorrectly skips a CIT</td><td><span class="badge badge-p0">HIGH</span></td><td>Strict check (only usage=USED). AUTHORIZATION_REQUIRED override catches false skips</td></tr>
+      <tr><td>BIN-to-country mapping stale/incomplete</td><td><span class="badge badge-p1">MED</span></td><td>Multiple data sources. Default to "go to 3DS" when unknown</td></tr>
+      <tr><td>Checkout.com API has no ETA</td><td><span class="badge badge-p1">MED</span></td><td>Design auto-routing for single provider. Prioritize additional MPIs</td></tr>
+      <tr><td>AUTHORIZATION_REQUIRED codes differ across providers</td><td><span class="badge badge-p1">MED</span></td><td>Create normalized detection layer in gateway-integration-api</td></tr>
+      <tr><td>Soft-decline retry loop</td><td><span class="badge badge-p3">LOW</span></td><td>Max 1 retry. Circuit breaker per merchant+BIN</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Open Questions</h3>
+  <table>
+    <thead>
+      <tr><th>ID</th><th>Question</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>OQ-1</td><td>3DS Decision Engine: standalone microservice or module in payment-rx-orc?</td></tr>
+      <tr><td>OQ-2</td><td>Cumulative low-value counters: card hash in Redis? Cross-region sync?</td></tr>
+      <tr><td>OQ-3</td><td>Current soft-decline behavior: does payment-rx-orc handle Visa 65 / MC 1A today?</td></tr>
+      <tr><td>OQ-4</td><td>BIN-to-country data source: existing BIN table or third-party?</td></tr>
+      <tr><td>OQ-6</td><td>ETA for Checkout.com <code>processor_channel_id</code> API?</td></tr>
+      <tr><td>OQ-7</td><td>Auto-routing exploration/exploitation ratio?</td></tr>
+      <tr><td>OQ-8</td><td>Which additional standalone MPIs to prioritize in Phase 4?</td></tr>
+      <tr><td>OQ-10</td><td>How do providers signal AUTHORIZATION_REQUIRED? Need provider-specific mapping?</td></tr>
+    </tbody>
+  </table>
+
+  <hr class="section-divider">
+
+  <!-- FAQ -->
+  <h2 id="faq">FAQ</h2>
+
+  <div class="card">
+    <h4>Why is fixing the skip logic a P0 alongside OR-694?</h4>
+    <p>MIT transactions (subscriptions, recurring charges) should never go through 3DS &mdash; the cardholder isn't present. Sending them to 3DS causes authentication failures. This is a basic correctness issue every competitor handles correctly.</p>
+  </div>
+
+  <div class="card">
+    <h4>What happens if a skipped transaction needs SCA after all?</h4>
+    <p>The provider declines with <code>AUTHORIZATION_REQUIRED</code>. If the merchant has auto-retry enabled (default), Yuno forces 3DS and retries automatically. If disabled, the decline is returned to the merchant. This is the safety net that makes aggressive skipping safe.</p>
+  </div>
+
+  <div class="card">
+    <h4>Why can't merchants just add a fraud provider?</h4>
+    <p>Fraud providers (Forter/Riskified) cost $50K+/year. SMB merchants shouldn't need one to apply a &euro;30 low-value exemption &mdash; that's arithmetic, not risk scoring.</p>
+  </div>
+
+  <div class="card">
+    <h4>How many standalone 3DS providers does Yuno have?</h4>
+    <p><strong>Two</strong> &mdash; Netcetera (~5.8M/month) and Checkout.com (~416/month). Others handle 3DS natively within their payment flow and are not part of the standalone product.</p>
+  </div>
+
+  <div class="card">
+    <h4>What's the competitive moat?</h4>
+    <p>Automatic multi-provider 3DS routing. No competitor can do this &mdash; they each use their own single 3DS engine. Combined with proper skip logic and automatic exemptions, Yuno offers a best-in-class 3DS product.</p>
+  </div>
+
+</div>
+
+<div class="footer">
+  Yuno Payments &middot; 3D Secure Strategy &middot; Product Scoping Document &middot; March 2026<br>
+  <a href="https://yunopayments.atlassian.net/wiki/spaces/PROD/pages/2585395203" style="color:var(--accent)">Full document with child pages on Confluence</a>
+</div>
+
+</body>
+</html>
