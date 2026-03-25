@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yuno 3DS Dashboard — Wireframe</title>
+<style>
+  :root {
+    --bg: #0F1117;
+    --surface: #1A1D27;
+    --surface-2: #232735;
+    --border: #2E3345;
+    --text: #E8E9ED;
+    --text-secondary: #8B8FA3;
+    --accent: #6C5CE7;
+    --accent-light: #A29BFE;
+    --green: #00B894;
+    --green-bg: rgba(0,184,148,0.12);
+    --yellow: #FDCB6E;
+    --yellow-bg: rgba(253,203,110,0.12);
+    --red: #E17055;
+    --red-bg: rgba(225,112,85,0.12);
+    --blue: #74B9FF;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family: 'Inter', -apple-system, sans-serif; background:var(--bg); color:var(--text); }
+
+  .layout { display:flex; min-height:100vh; }
+
+  /* Sidebar */
+  .sidebar { width:240px; background:var(--surface); border-right:1px solid var(--border); padding:24px 16px; flex-shrink:0; }
+  .sidebar-logo { font-size:20px; font-weight:700; color:var(--accent-light); margin-bottom:32px; padding:0 8px; }
+  .sidebar-section { font-size:11px; text-transform:uppercase; color:var(--text-secondary); letter-spacing:1px; padding:0 8px; margin:24px 0 8px; }
+  .sidebar-item { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:var(--radius-sm); color:var(--text-secondary); font-size:14px; cursor:pointer; margin:2px 0; transition:all .15s; }
+  .sidebar-item:hover { background:var(--surface-2); color:var(--text); }
+  .sidebar-item.active { background:rgba(108,92,231,0.15); color:var(--accent-light); }
+  .sidebar-icon { width:18px; text-align:center; }
+
+  /* Main */
+  .main { flex:1; padding:32px; overflow-y:auto; }
+  .page-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:32px; }
+  .page-title { font-size:24px; font-weight:600; }
+  .page-subtitle { font-size:14px; color:var(--text-secondary); margin-top:4px; }
+
+  /* Tabs */
+  .tabs { display:flex; gap:4px; background:var(--surface); padding:4px; border-radius:var(--radius-sm); margin-bottom:24px; width:fit-content; }
+  .tab { padding:8px 20px; border-radius:6px; font-size:13px; cursor:pointer; color:var(--text-secondary); transition:all .15s; }
+  .tab.active { background:var(--accent); color:white; }
+  .tab:hover:not(.active) { color:var(--text); }
+
+  /* Mode Toggle */
+  .mode-toggle { display:flex; gap:12px; margin-bottom:28px; }
+  .mode-card { flex:1; background:var(--surface); border:2px solid var(--border); border-radius:var(--radius); padding:20px; cursor:pointer; transition:all .2s; position:relative; }
+  .mode-card.selected { border-color:var(--accent); }
+  .mode-card:hover { border-color:var(--accent-light); }
+  .mode-badge { position:absolute; top:12px; right:12px; background:var(--accent); color:white; font-size:10px; padding:2px 8px; border-radius:10px; font-weight:600; }
+  .mode-card h3 { font-size:15px; margin-bottom:6px; }
+  .mode-card p { font-size:13px; color:var(--text-secondary); line-height:1.5; }
+  .mode-radio { width:18px; height:18px; border:2px solid var(--border); border-radius:50%; margin-bottom:12px; display:flex; align-items:center; justify-content:center; }
+  .mode-card.selected .mode-radio { border-color:var(--accent); }
+  .mode-card.selected .mode-radio::after { content:''; width:10px; height:10px; background:var(--accent); border-radius:50%; }
+
+  /* KPI Cards */
+  .kpi-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:28px; }
+  .kpi-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:20px; }
+  .kpi-label { font-size:12px; color:var(--text-secondary); text-transform:uppercase; letter-spacing:.5px; margin-bottom:8px; }
+  .kpi-value { font-size:28px; font-weight:700; }
+  .kpi-trend { font-size:12px; margin-top:6px; display:flex; align-items:center; gap:4px; }
+  .kpi-trend.up { color:var(--green); }
+  .kpi-trend.down { color:var(--red); }
+
+  /* Chart placeholder */
+  .chart-container { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:24px; margin-bottom:28px; }
+  .chart-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
+  .chart-title { font-size:15px; font-weight:600; }
+  .chart-period { display:flex; gap:4px; }
+  .period-btn { padding:5px 12px; font-size:12px; border-radius:6px; background:transparent; border:1px solid var(--border); color:var(--text-secondary); cursor:pointer; }
+  .period-btn.active { background:var(--surface-2); border-color:var(--accent); color:var(--accent-light); }
+  .chart-body { height:200px; background:var(--surface-2); border-radius:var(--radius-sm); display:flex; align-items:flex-end; padding:16px; gap:3px; }
+  .chart-bar { flex:1; border-radius:3px 3px 0 0; min-height:8px; transition:height .3s; }
+  .bar-frictionless { background:var(--green); }
+  .bar-challenge { background:var(--yellow); }
+  .bar-failed { background:var(--red); }
+  .chart-legend { display:flex; gap:20px; margin-top:16px; }
+  .legend-item { display:flex; align-items:center; gap:6px; font-size:12px; color:var(--text-secondary); }
+  .legend-dot { width:8px; height:8px; border-radius:2px; }
+
+  /* Config sections */
+  .config-section { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:24px; margin-bottom:16px; }
+  .config-section-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
+  .config-section-title { font-size:15px; font-weight:600; }
+
+  /* Toggle switch */
+  .toggle { width:44px; height:24px; background:var(--border); border-radius:12px; cursor:pointer; position:relative; transition:background .2s; }
+  .toggle.on { background:var(--accent); }
+  .toggle::after { content:''; position:absolute; top:2px; left:2px; width:20px; height:20px; background:white; border-radius:50%; transition:transform .2s; }
+  .toggle.on::after { transform:translateX(20px); }
+
+  /* Checkbox list */
+  .exemption-list { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .exemption-item { display:flex; align-items:flex-start; gap:10px; padding:12px; background:var(--surface-2); border-radius:var(--radius-sm); border:1px solid transparent; cursor:pointer; transition:all .15s; }
+  .exemption-item:hover { border-color:var(--border); }
+  .exemption-item.checked { border-color:var(--accent); background:rgba(108,92,231,0.08); }
+  .checkbox { width:18px; height:18px; border:2px solid var(--border); border-radius:4px; flex-shrink:0; margin-top:1px; display:flex; align-items:center; justify-content:center; }
+  .exemption-item.checked .checkbox { background:var(--accent); border-color:var(--accent); }
+  .exemption-item.checked .checkbox::after { content:'✓'; color:white; font-size:12px; }
+  .exemption-info h4 { font-size:13px; margin-bottom:3px; }
+  .exemption-info p { font-size:11px; color:var(--text-secondary); line-height:1.4; }
+  .exemption-tag { font-size:10px; padding:2px 6px; border-radius:4px; margin-top:4px; display:inline-block; }
+  .tag-auto { background:var(--green-bg); color:var(--green); }
+  .tag-fraud { background:var(--yellow-bg); color:var(--yellow); }
+
+  /* Radio group */
+  .radio-group { display:flex; gap:8px; flex-wrap:wrap; }
+  .radio-option { padding:10px 16px; background:var(--surface-2); border:1px solid var(--border); border-radius:var(--radius-sm); font-size:13px; cursor:pointer; transition:all .15s; }
+  .radio-option.selected { border-color:var(--accent); background:rgba(108,92,231,0.08); color:var(--accent-light); }
+
+  /* Slider */
+  .slider-container { padding:12px 0; }
+  .slider-labels { display:flex; justify-content:space-between; font-size:12px; color:var(--text-secondary); margin-bottom:8px; }
+  .slider-track { height:6px; background:var(--surface-2); border-radius:3px; position:relative; }
+  .slider-fill { height:100%; background:linear-gradient(90deg, var(--green), var(--yellow), var(--red)); border-radius:3px; width:50%; }
+  .slider-thumb { width:18px; height:18px; background:white; border:2px solid var(--accent); border-radius:50%; position:absolute; top:-6px; left:calc(50% - 9px); cursor:grab; }
+
+  /* Table */
+  .data-table { width:100%; border-collapse:collapse; }
+  .data-table th { text-align:left; font-size:11px; text-transform:uppercase; color:var(--text-secondary); letter-spacing:.5px; padding:12px 16px; border-bottom:1px solid var(--border); }
+  .data-table td { padding:12px 16px; border-bottom:1px solid var(--border); font-size:13px; }
+  .data-table tr:hover td { background:var(--surface-2); }
+  .status-dot { width:8px; height:8px; border-radius:50%; display:inline-block; margin-right:6px; }
+  .status-dot.green { background:var(--green); }
+  .status-dot.yellow { background:var(--yellow); }
+  .status-dot.red { background:var(--red); }
+
+  /* Provider card */
+  .provider-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .provider-card { background:var(--surface-2); border:1px solid var(--border); border-radius:var(--radius-sm); padding:16px; }
+  .provider-name { font-size:14px; font-weight:600; margin-bottom:8px; }
+  .provider-stat { display:flex; justify-content:space-between; font-size:12px; padding:4px 0; }
+  .provider-stat-label { color:var(--text-secondary); }
+
+  /* Tooltip */
+  .tooltip { position:relative; display:inline-flex; }
+  .tooltip-icon { width:14px; height:14px; border-radius:50%; background:var(--surface-2); border:1px solid var(--border); font-size:9px; display:flex; align-items:center; justify-content:center; color:var(--text-secondary); cursor:help; margin-left:4px; }
+
+  /* Save bar */
+  .save-bar { position:fixed; bottom:0; left:240px; right:0; background:var(--surface); border-top:1px solid var(--border); padding:16px 32px; display:flex; justify-content:flex-end; gap:12px; z-index:10; }
+  .btn { padding:10px 24px; border-radius:var(--radius-sm); font-size:13px; font-weight:500; cursor:pointer; border:none; transition:all .15s; }
+  .btn-secondary { background:var(--surface-2); color:var(--text); border:1px solid var(--border); }
+  .btn-primary { background:var(--accent); color:white; }
+  .btn-primary:hover { background:var(--accent-light); }
+
+  /* Country override */
+  .override-row { display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid var(--border); }
+  .override-country { width:120px; font-size:13px; display:flex; align-items:center; gap:6px; }
+  .override-flag { font-size:16px; }
+  .override-config { flex:1; font-size:12px; color:var(--text-secondary); }
+  .override-action { color:var(--accent-light); font-size:12px; cursor:pointer; }
+
+  /* Empty state */
+  .empty-state { text-align:center; padding:48px 24px; }
+  .empty-icon { font-size:48px; margin-bottom:16px; opacity:.5; }
+  .empty-title { font-size:16px; font-weight:500; margin-bottom:8px; }
+  .empty-desc { font-size:13px; color:var(--text-secondary); max-width:400px; margin:0 auto 20px; line-height:1.6; }
+
+  /* Managed mode overlay */
+  .managed-overlay { position:relative; }
+  .managed-overlay::after { content:'Managed by Yuno — switch to Custom mode to configure'; position:absolute; top:0; left:0; right:0; bottom:0; background:rgba(15,17,23,0.7); display:flex; align-items:center; justify-content:center; font-size:13px; color:var(--text-secondary); border-radius:var(--radius); backdrop-filter:blur(2px); }
+
+  .divider { height:1px; background:var(--border); margin:16px 0; }
+</style>
+</head>
+<body>
+<div class="layout">
+
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <div class="sidebar-logo">yuno</div>
+    <div class="sidebar-section">Payments</div>
+    <div class="sidebar-item"><span class="sidebar-icon">◈</span> Transactions</div>
+    <div class="sidebar-item"><span class="sidebar-icon">⟳</span> Routing</div>
+    <div class="sidebar-item active"><span class="sidebar-icon">◉</span> 3D Secure</div>
+    <div class="sidebar-item"><span class="sidebar-icon">⚡</span> Fraud</div>
+    <div class="sidebar-section">Configuration</div>
+    <div class="sidebar-item"><span class="sidebar-icon">⊞</span> Providers</div>
+    <div class="sidebar-item"><span class="sidebar-icon">⚙</span> Settings</div>
+    <div class="sidebar-section">Analytics</div>
+    <div class="sidebar-item"><span class="sidebar-icon">▤</span> Reports</div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main">
+
+    <!-- Page Header -->
+    <div class="page-header">
+      <div>
+        <div class="page-title">3D Secure</div>
+        <div class="page-subtitle">Manage authentication strategy, exemptions, and provider performance</div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-secondary">Export Report</button>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <div class="tab active" onclick="showTab('monitoring')">Monitoring</div>
+      <div class="tab" onclick="showTab('configuration')">Configuration</div>
+      <div class="tab" onclick="showTab('exemptions')">Exemption Detail</div>
+    </div>
+
+    <!-- ═══════════════════════════════════ -->
+    <!-- TAB 1: MONITORING                   -->
+    <!-- ═══════════════════════════════════ -->
+    <div id="tab-monitoring">
+
+      <!-- KPI Cards -->
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-label">Frictionless Rate</div>
+          <div class="kpi-value" style="color:var(--green)">72.4%</div>
+          <div class="kpi-trend up">↑ 3.2pp vs last month</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Challenge Rate</div>
+          <div class="kpi-value" style="color:var(--yellow)">22.8%</div>
+          <div class="kpi-trend down">↓ 2.1pp vs last month</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Challenge Drop-off</div>
+          <div class="kpi-value" style="color:var(--red)">8.3%</div>
+          <div class="kpi-trend up">↑ 0.4pp vs last month</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Exemption Approval</div>
+          <div class="kpi-value" style="color:var(--blue)">89.1%</div>
+          <div class="kpi-trend up">↑ 1.8pp vs last month</div>
+        </div>
+      </div>
+
+      <!-- Chart -->
+      <div class="chart-container">
+        <div class="chart-header">
+          <div class="chart-title">3DS Outcomes Over Time</div>
+          <div class="chart-period">
+            <button class="period-btn">7D</button>
+            <button class="period-btn active">30D</button>
+            <button class="period-btn">90D</button>
+          </div>
+        </div>
+        <div class="chart-body">
+          <!-- Simulated stacked bar chart -->
+          <div style="flex:1;display:flex;flex-direction:column;gap:1px;justify-content:flex-end;">
+            <div class="chart-bar bar-failed" style="height:8px"></div>
+            <div class="chart-bar bar-challenge" style="height:35px"></div>
+            <div class="chart-bar bar-frictionless" style="height:95px"></div>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:1px;justify-content:flex-end;">
+            <div class="chart-bar bar-failed" style="height:5px"></div>
+            <div class="chart-bar bar-challenge" style="height:30px"></div>
+            <div class="chart-bar bar-frictionless" style="height:100px"></div>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:1px;justify-content:flex-end;">
+            <div class="chart-bar bar-failed" style="height:6px"></div>
+            <div class="chart-bar bar-challenge" style="height:40px"></div>
+            <div class="chart-bar bar-frictionless" style="height:90px"></div>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:1px;justify-content:flex-end;">
+            <div class="chart-bar bar-failed" style="height:4px"></div>
+            <div class="chart-bar bar-challenge" style="height:28px"></div>
+            <div class="chart-bar bar-frictionless" style="height:105px"></div>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:1px;justify-content:flex-end;">
+            <div class="chart-bar bar-failed" style="height:7px"></div>
+            <div class="chart-bar bar-challenge" style="height:32px"></div>
+            <div class="chart-bar bar-frictionless" style="height:98px"></div>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:1px;justify-content:flex-end;">
+            <div class="chart-bar bar-failed" style="height:3px"></div>
+            <div class="chart-bar bar-challenge" style="height:25px"></div>
+            <div class="chart-bar bar-frictionless" style="height:110px"></div>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:1px;justify-content:flex-end;">
+            <div class="chart-bar bar-failed" style="height:5px"></div>
+            <div class="chart-bar bar-challenge" style="height:22px"></div>
+            <div class="chart-bar bar-frictionless" style="height:115px"></div>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:1px;justify-content:flex-end;">
+            <div class="chart-bar bar-failed" style="height:4px"></div>
+            <div class="chart-bar bar-challenge" style="height:30px"></div>
+            <div class="chart-bar bar-frictionless" style="height:108px"></div>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:1px;justify-content:flex-end;">
+            <div class="chart-bar bar-failed" style="height:6px"></div>
+            <div class="chart-bar bar-challenge" style="height:35px"></div>
+            <div class="chart-bar bar-frictionless" style="height:95px"></div>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:1px;justify-content:flex-end;">
+            <div class="chart-bar bar-failed" style="height:3px"></div>
+            <div class="chart-bar bar-challenge" style="height:20px"></div>
+            <div class="chart-bar bar-frictionless" style="height:120px"></div>
+          </div>
+        </div>
+        <div class="chart-legend">
+          <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div> Frictionless</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--yellow)"></div> Challenge</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div> Failed / Dropped</div>
+        </div>
+      </div>
+
+      <!-- Country Breakdown -->
+      <div class="chart-container">
+        <div class="chart-header">
+          <div class="chart-title">Performance by Country</div>
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Country</th>
+              <th>Transactions</th>
+              <th>Frictionless</th>
+              <th>Challenge</th>
+              <th>Drop-off</th>
+              <th>Auth Rate</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>🇪🇸 Spain</td>
+              <td>4,230</td>
+              <td><span class="status-dot green"></span>78.2%</td>
+              <td>18.4%</td>
+              <td>6.1%</td>
+              <td>94.2%</td>
+            </tr>
+            <tr>
+              <td>🇩🇪 Germany</td>
+              <td>3,120</td>
+              <td><span class="status-dot yellow"></span>65.1%</td>
+              <td>30.2%</td>
+              <td>9.8%</td>
+              <td>88.7%</td>
+            </tr>
+            <tr>
+              <td>🇧🇷 Brazil</td>
+              <td>2,850</td>
+              <td><span class="status-dot yellow"></span>55.3%</td>
+              <td>39.8%</td>
+              <td>12.4%</td>
+              <td>82.1%</td>
+            </tr>
+            <tr>
+              <td>🇲🇽 Mexico</td>
+              <td>2,100</td>
+              <td><span class="status-dot green"></span>82.5%</td>
+              <td>14.2%</td>
+              <td>4.3%</td>
+              <td>96.1%</td>
+            </tr>
+            <tr>
+              <td>🇫🇷 France</td>
+              <td>1,890</td>
+              <td><span class="status-dot yellow"></span>60.8%</td>
+              <td>34.5%</td>
+              <td>11.2%</td>
+              <td>85.3%</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Provider Performance -->
+      <div class="chart-container">
+        <div class="chart-header">
+          <div class="chart-title">3DS Provider Performance</div>
+        </div>
+        <div class="provider-grid">
+          <div class="provider-card">
+            <div class="provider-name">Netcetera 3DS</div>
+            <div class="provider-stat"><span class="provider-stat-label">Frictionless Rate</span> <span style="color:var(--green)">74.1%</span></div>
+            <div class="provider-stat"><span class="provider-stat-label">Avg Latency</span> 1,200ms</div>
+            <div class="provider-stat"><span class="provider-stat-label">Uptime (30d)</span> 99.97%</div>
+            <div class="provider-stat"><span class="provider-stat-label">Transactions</span> 9,840</div>
+          </div>
+          <div class="provider-card">
+            <div class="provider-name">Checkout.com 3DS</div>
+            <div class="provider-stat"><span class="provider-stat-label">Frictionless Rate</span> <span style="color:var(--green)">70.3%</span></div>
+            <div class="provider-stat"><span class="provider-stat-label">Avg Latency</span> 980ms</div>
+            <div class="provider-stat"><span class="provider-stat-label">Uptime (30d)</span> 99.99%</div>
+            <div class="provider-stat"><span class="provider-stat-label">Transactions</span> 5,580</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════ -->
+    <!-- TAB 2: CONFIGURATION                -->
+    <!-- ═══════════════════════════════════ -->
+    <div id="tab-configuration" style="display:none;">
+
+      <!-- Mode Toggle -->
+      <div class="mode-toggle">
+        <div class="mode-card" onclick="selectMode(this, 'managed')">
+          <div class="mode-radio"></div>
+          <h3>Managed</h3>
+          <p>Yuno automatically optimizes your 3DS strategy — exemptions, challenge preferences, and provider routing are handled for you.</p>
+          <div class="mode-badge">RECOMMENDED</div>
+        </div>
+        <div class="mode-card selected" onclick="selectMode(this, 'custom')">
+          <div class="mode-radio"></div>
+          <h3>Custom</h3>
+          <p>Full control over exemption types, challenge preferences, country overrides, and risk tolerance. Requires payment expertise.</p>
+        </div>
+        <div class="mode-card" onclick="selectMode(this, 'disabled')">
+          <div class="mode-radio"></div>
+          <h3>Disabled</h3>
+          <p>No Yuno 3DS optimization. 3DS is handled entirely by your routing configuration and provider defaults.</p>
+        </div>
+      </div>
+
+      <!-- Exemption Types -->
+      <div class="config-section">
+        <div class="config-section-header">
+          <div>
+            <div class="config-section-title">Exemption Types</div>
+            <div style="font-size:12px;color:var(--text-secondary);margin-top:4px;">Select which SCA exemptions Yuno should request when applicable</div>
+          </div>
+          <div class="toggle on"></div>
+        </div>
+        <div class="exemption-list">
+          <div class="exemption-item checked">
+            <div class="checkbox"></div>
+            <div class="exemption-info">
+              <h4>Low Value <span class="tooltip"><span class="tooltip-icon">?</span></span></h4>
+              <p>Transactions below €30 (EU) / £25 (UK). Cumulative limit: €100 or 5 transactions.</p>
+              <span class="exemption-tag tag-auto">AUTO-DETECTED</span>
+            </div>
+          </div>
+          <div class="exemption-item checked">
+            <div class="checkbox"></div>
+            <div class="exemption-info">
+              <h4>Recurring Payment <span class="tooltip"><span class="tooltip-icon">?</span></span></h4>
+              <p>Subsequent payments in a recurring series with fixed amount and same payee. First payment must be SCA-authenticated.</p>
+              <span class="exemption-tag tag-auto">AUTO-DETECTED</span>
+            </div>
+          </div>
+          <div class="exemption-item checked">
+            <div class="checkbox"></div>
+            <div class="exemption-info">
+              <h4>Transaction Risk Analysis <span class="tooltip"><span class="tooltip-icon">?</span></span></h4>
+              <p>Real-time risk scoring indicates low fraud probability. Requires a fraud provider (Forter, Riskified) in your route.</p>
+              <span class="exemption-tag tag-fraud">REQUIRES FRAUD PROVIDER</span>
+            </div>
+          </div>
+          <div class="exemption-item">
+            <div class="checkbox"></div>
+            <div class="exemption-info">
+              <h4>Trusted Beneficiary <span class="tooltip"><span class="tooltip-icon">?</span></span></h4>
+              <p>Cardholder has whitelisted your merchant with their issuing bank. Issuer decides approval.</p>
+              <span class="exemption-tag tag-auto">ISSUER-SIDE</span>
+            </div>
+          </div>
+          <div class="exemption-item">
+            <div class="checkbox"></div>
+            <div class="exemption-info">
+              <h4>Secure Corporate <span class="tooltip"><span class="tooltip-icon">?</span></span></h4>
+              <p>Payments made with corporate cards via dedicated, secured business processes and protocols.</p>
+              <span class="exemption-tag tag-auto">MERCHANT DECLARATION</span>
+            </div>
+          </div>
+          <div class="exemption-item" style="opacity:0.5;pointer-events:none;">
+            <div class="checkbox"></div>
+            <div class="exemption-info">
+              <h4>Delegated Authentication <span class="tooltip"><span class="tooltip-icon">?</span></span></h4>
+              <p>Authentication delegated to a trusted third party. Available for merchants with their own SCA capability.</p>
+              <span class="exemption-tag" style="background:var(--red-bg);color:var(--red);">COMING SOON</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Challenge Preference -->
+      <div class="config-section">
+        <div class="config-section-header">
+          <div class="config-section-title">Challenge Preference</div>
+        </div>
+        <div style="font-size:12px;color:var(--text-secondary);margin-bottom:12px;">Controls the challengeIndicator sent to the 3DS provider. The issuer makes the final decision.</div>
+        <div class="radio-group">
+          <div class="radio-option selected">No Preference (01)</div>
+          <div class="radio-option">Challenge Mandated (04)</div>
+          <div class="radio-option">No Challenge — Data Only (06)</div>
+        </div>
+      </div>
+
+      <!-- Risk Tolerance -->
+      <div class="config-section">
+        <div class="config-section-header">
+          <div class="config-section-title">Risk Tolerance</div>
+        </div>
+        <div style="font-size:12px;color:var(--text-secondary);margin-bottom:12px;">Controls how aggressively Yuno applies exemptions. Higher tolerance = more exemption requests = potentially higher conversion but slightly higher fraud risk.</div>
+        <div class="slider-container">
+          <div class="slider-labels">
+            <span>Conservative</span>
+            <span>Balanced</span>
+            <span>Aggressive</span>
+          </div>
+          <div class="slider-track">
+            <div class="slider-fill"></div>
+            <div class="slider-thumb"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Soft-Decline Retry -->
+      <div class="config-section">
+        <div class="config-section-header">
+          <div>
+            <div class="config-section-title">Soft-Decline Auto-Retry</div>
+            <div style="font-size:12px;color:var(--text-secondary);margin-top:4px;">When an issuer soft-declines a non-authenticated transaction, automatically retry with 3DS</div>
+          </div>
+          <div class="toggle on"></div>
+        </div>
+      </div>
+
+      <!-- Country Overrides -->
+      <div class="config-section">
+        <div class="config-section-header">
+          <div class="config-section-title">Country Overrides</div>
+          <button class="btn btn-secondary" style="font-size:12px;padding:6px 14px;">+ Add Override</button>
+        </div>
+        <div style="font-size:12px;color:var(--text-secondary);margin-bottom:16px;">Override exemption and challenge settings for specific countries</div>
+        <div class="override-row">
+          <div class="override-country"><span class="override-flag">🇧🇷</span> Brazil</div>
+          <div class="override-config">Exemptions: <strong>Disabled</strong> (no PSD2 exemption framework)</div>
+          <div class="override-action">Edit</div>
+        </div>
+        <div class="override-row">
+          <div class="override-country"><span class="override-flag">🇮🇳</span> India</div>
+          <div class="override-config">Exemptions: <strong>Disabled</strong> · Challenge: <strong>Mandated</strong> (RBI AFA)</div>
+          <div class="override-action">Edit</div>
+        </div>
+        <div class="override-row">
+          <div class="override-country"><span class="override-flag">🇩🇪</span> Germany</div>
+          <div class="override-config">Challenge: <strong>No Preference</strong> · Risk: <strong>Aggressive</strong></div>
+          <div class="override-action">Edit</div>
+        </div>
+      </div>
+
+      <!-- Provider Preferences -->
+      <div class="config-section">
+        <div class="config-section-header">
+          <div class="config-section-title">Provider Preferences</div>
+        </div>
+        <div style="display:flex;gap:16px;margin-top:8px;">
+          <div style="flex:1;">
+            <div style="font-size:12px;color:var(--text-secondary);margin-bottom:6px;">Preferred 3DS Provider</div>
+            <div class="radio-option selected" style="width:100%;text-align:center;">Auto (best frictionless rate)</div>
+          </div>
+          <div style="flex:1;">
+            <div style="font-size:12px;color:var(--text-secondary);margin-bottom:6px;">Fallback on Provider Failure</div>
+            <div style="display:flex;align-items:center;gap:8px;padding-top:8px;">
+              <div class="toggle on"></div>
+              <span style="font-size:13px;">Route to next available provider</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Save Bar -->
+      <div class="save-bar">
+        <button class="btn btn-secondary">Discard Changes</button>
+        <button class="btn btn-primary">Save Configuration</button>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════ -->
+    <!-- TAB 3: EXEMPTION DETAIL             -->
+    <!-- ═══════════════════════════════════ -->
+    <div id="tab-exemptions" style="display:none;">
+
+      <!-- Exemption Performance Table -->
+      <div class="chart-container">
+        <div class="chart-header">
+          <div class="chart-title">Exemption Performance (Last 30 Days)</div>
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Exemption Type</th>
+              <th>Requested</th>
+              <th>Approved</th>
+              <th>Rejected</th>
+              <th>Approval Rate</th>
+              <th>Trend</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Low Value</strong></td>
+              <td>2,340</td>
+              <td>2,105</td>
+              <td>235</td>
+              <td><span style="color:var(--green)">89.9%</span></td>
+              <td style="color:var(--green)">↑ 2.1pp</td>
+            </tr>
+            <tr>
+              <td><strong>Recurring Payment</strong></td>
+              <td>1,850</td>
+              <td>1,720</td>
+              <td>130</td>
+              <td><span style="color:var(--green)">93.0%</span></td>
+              <td style="color:var(--green)">↑ 0.8pp</td>
+            </tr>
+            <tr>
+              <td><strong>Transaction Risk Analysis</strong></td>
+              <td>890</td>
+              <td>712</td>
+              <td>178</td>
+              <td><span style="color:var(--yellow)">80.0%</span></td>
+              <td style="color:var(--red)">↓ 1.3pp</td>
+            </tr>
+            <tr>
+              <td><strong>Trusted Beneficiary</strong></td>
+              <td>120</td>
+              <td>98</td>
+              <td>22</td>
+              <td><span style="color:var(--green)">81.7%</span></td>
+              <td style="color:var(--green)">↑ 4.5pp</td>
+            </tr>
+            <tr>
+              <td><strong>Secure Corporate</strong></td>
+              <td>45</td>
+              <td>42</td>
+              <td>3</td>
+              <td><span style="color:var(--green)">93.3%</span></td>
+              <td>—</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Issuer BIN Breakdown -->
+      <div class="chart-container">
+        <div class="chart-header">
+          <div class="chart-title">Top Issuer Exemption Response (Low Value)</div>
+          <div style="font-size:12px;color:var(--text-secondary);">Which issuing banks approve/reject low-value exemptions</div>
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Issuer BIN Range</th>
+              <th>Bank</th>
+              <th>Country</th>
+              <th>Requests</th>
+              <th>Approval Rate</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>4548 81xx</code></td>
+              <td>La Caixa</td>
+              <td>🇪🇸 ES</td>
+              <td>380</td>
+              <td><span style="color:var(--green)">95.2%</span></td>
+            </tr>
+            <tr>
+              <td><code>5167 01xx</code></td>
+              <td>Commerzbank</td>
+              <td>🇩🇪 DE</td>
+              <td>245</td>
+              <td><span style="color:var(--green)">88.6%</span></td>
+            </tr>
+            <tr>
+              <td><code>4978 09xx</code></td>
+              <td>Santander UK</td>
+              <td>🇬🇧 GB</td>
+              <td>210</td>
+              <td><span style="color:var(--green)">91.0%</span></td>
+            </tr>
+            <tr>
+              <td><code>5100 10xx</code></td>
+              <td>BNP Paribas</td>
+              <td>🇫🇷 FR</td>
+              <td>190</td>
+              <td><span style="color:var(--yellow)">72.1%</span></td>
+            </tr>
+            <tr>
+              <td><code>4388 57xx</code></td>
+              <td>N26</td>
+              <td>🇩🇪 DE</td>
+              <td>165</td>
+              <td><span style="color:var(--red)">61.2%</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Recommendation -->
+      <div class="config-section" style="border-left:3px solid var(--accent);">
+        <div class="config-section-title" style="margin-bottom:8px;">Recommendations</div>
+        <div style="font-size:13px;line-height:1.6;color:var(--text-secondary);">
+          <p style="margin-bottom:8px;">Based on your transaction data from the last 30 days:</p>
+          <p style="margin-bottom:6px;">
+            <span style="color:var(--green)">●</span> <strong>Enable Trusted Beneficiary for Spain:</strong> La Caixa and BBVA show 90%+ approval rates for this exemption type. Estimated challenge reduction: ~120 transactions/month.
+          </p>
+          <p style="margin-bottom:6px;">
+            <span style="color:var(--yellow)">●</span> <strong>Review TRA for France:</strong> BNP Paribas has been declining TRA exemptions at a higher rate (72.1%). Consider switching to Low Value for sub-€30 French transactions instead.
+          </p>
+          <p>
+            <span style="color:var(--red)">●</span> <strong>N26 (DE) rejects Low Value frequently:</strong> 61.2% approval rate is below benchmark. For N26-issued cards, consider defaulting to No Preference challenge indicator.
+          </p>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+function showTab(name) {
+  document.querySelectorAll('[id^="tab-"]').forEach(t => t.style.display = 'none');
+  document.getElementById('tab-' + name).style.display = 'block';
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+}
+function selectMode(el, mode) {
+  document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+}
+</script>
+</body>
+</html>
